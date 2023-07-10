@@ -6,7 +6,7 @@ import pytz
 from pandas import DataFrame
 
 from app.utils.db_utils import MySQLClient, MongoCollection
-from app.utils.time_utils import get_datetime_today
+from app.utils.time_utils import get_datetime_today, get_datetime_range_today
 from app.config import (
     REPORTING_MYSQL_DB,
     REPORTING_AULDATALEAK_TABLENAME,
@@ -250,3 +250,18 @@ def auldata_leak_reporting_table_cleanup(client: MySQLClient) -> None:
     client.execute_query(reporting_table_delete_query)
 
     print("Deleting table... " + REPORTING_AULDATALEAK_TABLENAME)
+
+
+def run_program() -> None:
+    """Run the Reporting Process"""
+    reporting_client = get_reporting_client()
+    init_auldata_leak_reporting_table(reporting_client)
+
+    audit_collection = get_audit_collection()
+    audit_range_start, audit_range_end = get_datetime_range_today()
+    auldata_subs = get_auldata_subscribers(
+        audit_collection, audit_range_start, audit_range_end
+    )
+
+    compare_auldata(auldata_subs, reporting_client)
+    auldata_leak_reporting_table_cleanup(reporting_client)

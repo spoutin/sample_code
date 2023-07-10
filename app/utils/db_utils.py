@@ -67,15 +67,15 @@ class MongoCollection:
             readPreference=read_preference,
             authMechanism=auth_mechanism,
         )
-        self.database = self.client.get(database, None)
+        try:
+            self.database = self.client[database]
+        except Exception as exc:
+            raise ValueError(f"Database {database} does not exist.") from exc
 
-        if self.database is None:
-            raise ValueError("Database {database} does not exist.")
-
-        self.collection = self.database.get(collection, None)
-
-        if self.collection is None:
-            raise ValueError("Collection {collection} does not exist.")
+        try:
+            self.collection = self.database[collection]
+        except Exception as exc:
+            raise ValueError(f"Collection {collection} does not exist.") from exc
 
     def run_mongo_query(
         self,
