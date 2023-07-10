@@ -175,7 +175,8 @@ def run_compare_on_node(
         columns=["extSubId", "MDN", "BAN", "start", "end", "bytesIn", "bytesOut"]
     )
 
-    for subscriber in sub_list:
+    for _, subscriber in sub_list.iterrows():
+        print(subscriber["subscriberId"])
         effective_date = datetime.strptime(
             subscriber["effectiveDate"], "%Y-%m-%dT%H:%M:%SZ"
         ).astimezone(pytz.timezone("US/Eastern"))
@@ -239,7 +240,7 @@ def compare_auldata(auldata_subs: DataFrame, reporting_client: MySQLClient) -> N
         run_compare_on_node(node, sub_list, reporting_client)
 
 
-def auldata_leak_reporting_table_cleanup(client: MySQLClient) -> None:
+def cleanup_auldata_leak_reporting_table(client: MySQLClient) -> None:
     """Delete the older Subscriber Data Reports older than 1 month.
 
     Args:
@@ -264,4 +265,4 @@ def run_program() -> None:
     )
 
     compare_auldata(auldata_subs, reporting_client)
-    auldata_leak_reporting_table_cleanup(reporting_client)
+    cleanup_auldata_leak_reporting_table(reporting_client)
