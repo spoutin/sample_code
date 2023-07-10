@@ -19,7 +19,7 @@ class MySQLClient:
 
         mysql_uri = f"mysql://{username}:{password}@{server}:{port}\
                      /{database}?charset=utf8"
-        self.client = create_engine(mysql_uri, pool_recycle=3600)
+        self.engine = create_engine(mysql_uri, pool_recycle=3600)
 
     def execute_query(self, query: str) -> Union[int, str]:
         """Execute a Query via the MySQL connection.
@@ -31,7 +31,9 @@ class MySQLClient:
             Union[int, str]: 0 if successful. Error Message if not.
         """
         try:
-            self.client.execute(query)
+            with self.engine.connect() as connection:
+                connection.execute(query)
+
             return 0
         except SQLAlchemyError as sql_error:
             error = str(sql_error.__dict__["orig"])
