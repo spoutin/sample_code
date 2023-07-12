@@ -18,6 +18,13 @@ def mock_usage_mongo_client():
 
 
 @pytest.fixture(autouse=True)
+def mock_usage_mongo_run_query():
+    mock_mongo_client = patch("sample_code.dao.usage.UsageDAO.run_query")
+    yield mock_mongo_client.start()
+    mock_mongo_client.stop()
+
+
+@pytest.fixture(autouse=True)
 def mock_report_mysql_client():
     mock_mysql_client = patch("sample_code.dao.reporting.create_engine")
     yield mock_mysql_client.start()
