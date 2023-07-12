@@ -28,7 +28,10 @@ SERVER_C = "127.0.0.1:27017"
 REPLICASET_A = "rs0"
 REPLICASET_B = "rs1"
 REPLICASET_C = "rs2"
-USERNAME = os.environ.get('mongo_USERNAME')PASSWORD = os.environ.get('mongo_PASSWORD')DATABASE = "mydb"COLLECTION = "mycollection"
+USERNAME = os.environ.get('mongo_USERNAME')
+PASSWORD = os.environ.get('mongo_PASSWORD')
+DATABASE = "mydb"
+COLLECTION = "mycollection"
 ARC_MONGO_PORT = '27017'
 ARC_MONGO_AUTHMECHANISM = "SCRAM-SHA-1"
 ARC_MONGO_AUTHSOURCE = "admin"
@@ -111,7 +114,7 @@ def get_auldata_subscribers(auditRangeStart: datetime, auditRangeEnd: datetime):
         mongoServers=AUDIT_SERVER,
         mongoReplicaset=AUDIT_REPLICASET,
         username=AUDIT_USERNAME,
-        password=AUDIT_PASSWORD)[ARC_AUDIT_DATABASE]
+        password=AUDIT_PASSWORD)[AUDIT_DATABASE]
     auditCollection = auditClient[AUDIT_COLLECTION]
 
     # print(auditRangeStart.strftime('%Y-%m-%dT%H:%M:%SZ'))
@@ -208,7 +211,9 @@ def run_compare_on_node(node: str, subList):
         usageClient = get_mongo_client(
             mongoServers=arcUsageServer,
             mongoReplicaset=arcUsageReplicaset,
-            username=USERNAME,            password=PASSWORD)[ARC_USAGE_DATABASE]        usageCollection = usageClient[COLLECTION]
+            username=USERNAME,            
+            password=PASSWORD)[DATABASE]        
+        usageCollection = usageClient[COLLECTION]
         usageResult = pd.DataFrame(columns = ['extSubId', 'MDN', 'BAN', 'start', 'end', 'bytesIn', 'bytesOut'])
 
         for subscriber in subList:
@@ -252,7 +257,7 @@ def compare(auldataSubs):
     run_compare_on_node("C", subListC)
 
 
-def aludata_leak_reporting_table_cleanup(client):
+def auldata_leak_reporting_table_cleanup(client):
     reportingTableDeleteQuery = f"DELETE FROM {REPORTING_AULDATALEAK_TABLENAME} WHERE AUDITDATE < DATE_SUB(NOW(), INTERVAL 1 MONTH)"
     client.execute(reportingTableDeleteQuery)
 
@@ -266,4 +271,4 @@ if __name__ == '__main__':
 
     auldataSubs = get_auldata_subscribers(auditRangeStart, auditRangeEnd)
     compare(auldataSubs)
-    aludata_leak_reporting_table_cleanup(reportingClient)
+    auldata_leak_reporting_table_cleanup(reportingClient)
