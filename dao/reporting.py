@@ -49,3 +49,7 @@ class ReportDAO:
         usageReportingQuery = f"INSERT INTO {REPORTING_AULDATALEAK_TABLENAME} (SUBSCRIBERID, MDN, BAN, USAGESTART, USAGEEND, TOTALMB, AUDITDATE) VALUES "
         data = self.process_data_for_insert(rows)
         self.run_query(usageReportingQuery + data)
+
+    def clean_reporting_data(self):
+        reportingTableDeleteQuery = f"DELETE FROM {REPORTING_AULDATALEAK_TABLENAME} WHERE AUDITDATE < DATE_SUB(NOW(), INTERVAL 1 MONTH)"
+        self.run_query(reportingTableDeleteQuery)

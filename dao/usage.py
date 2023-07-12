@@ -5,6 +5,7 @@ from settings import (
     ARC_MONGO_AUTHMECHANISM,
     ARC_MONGO_AUTHSOURCE,
     ARC_MONGO_READ_PREFERENCE,
+    COLLECTION,
 )
 
 
@@ -54,8 +55,8 @@ class UsageDAO:
 
         return results
 
-    def get_sub_usage(self, collection_name, subscriberId, effectiveDate, expiryDate):
-        collection = self.client[collection_name]
+    def get_subscriber_usage(self, subscriberId, effectiveDate, expiryDate) -> list:
+        collection = self.client[COLLECTION]
         usageQuery = {
             "$and": [
                 {"end": {"$gte": effectiveDate, "$lte": expiryDate}},
@@ -74,4 +75,4 @@ class UsageDAO:
             "bytesIn": 1,
             "bytesOut": 1,
         }
-        return self.run_mongo_query(collection, usageQuery, usageProject)
+        return self.run_query(collection, usageQuery, usageProject)
