@@ -1,0 +1,8 @@
+.idea
+*.pyc
+.pytest_cache
+.python-version
+.vscode/
+__pycache__
+db.sqlite3
+.DS_Store
