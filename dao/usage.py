@@ -1,7 +1,7 @@
 from pymongo import DESCENDING, MongoClient
 from pymongo.collection import Collection
 
-from settings import (
+from sample_code.settings import (
     ARC_MONGO_AUTHMECHANISM,
     ARC_MONGO_AUTHSOURCE,
     ARC_MONGO_READ_PREFERENCE,

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pymongo import MongoClient
 
-from settings import (
+from sample_code.settings import (
     ARC_MONGO_AUTHMECHANISM,
     ARC_MONGO_AUTHSOURCE,
     ARC_MONGO_READ_PREFERENCE,

@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 
-from settings import (
+from sample_code.settings import (
     REPORTING_AULDATALEAK_TABLENAME,
     REPORTING_SQL_DATABASE,
     REPORTING_SQL_PASSWORD,
@@ -43,7 +43,7 @@ class ReportDAO:
 
     @staticmethod
     def process_data_for_insert(rows):
-        return ", ".join([f"({', '.join(r)})" for r in rows])
+        return ", ".join([f"({', '.join(map(str, r))})" for r in rows])
 
     def insert_reporting_data(self, rows):
         usageReportingQuery = f"INSERT INTO {REPORTING_AULDATALEAK_TABLENAME} (SUBSCRIBERID, MDN, BAN, USAGESTART, USAGEEND, TOTALMB, AUDITDATE) VALUES "

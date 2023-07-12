@@ -7,7 +7,7 @@ from pymongo.collection import Collection
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 
-from settings import (
+from sample_code.settings import (
     ARC_MONGO_AUTHMECHANISM,
     ARC_MONGO_AUTHSOURCE,
     ARC_MONGO_READ_PREFERENCE,

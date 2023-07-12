@@ -6,7 +6,7 @@ import pytz
 from dao.audit import AuditDAO
 from dao.reporting import ReportDAO
 from dao.usage import UsageDAO
-from settings import (
+from sample_code.settings import (
     AUDIT_PASSWORD,
     AUDIT_REPLICASET,
     AUDIT_SERVER,
