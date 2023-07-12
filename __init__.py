@@ -1,1 +1,1 @@
-from utils.signals import * # noqa
+from utils.signals import *  # noqa
