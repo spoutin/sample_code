@@ -11,6 +11,13 @@ def mock_audit_mongo_client():
 
 
 @pytest.fixture(autouse=True)
+def mock_usage_mongo_run_agg_query():
+    mock_mongo_client = patch("sample_code.dao.audit.AuditDAO.run_aggregation_query")
+    yield mock_mongo_client.start()
+    mock_mongo_client.stop()
+
+
+@pytest.fixture(autouse=True)
 def mock_usage_mongo_client():
     mock_mongo_client = patch("sample_code.dao.usage.MongoClient")
     yield mock_mongo_client.start()

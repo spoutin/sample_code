@@ -28,6 +28,9 @@ class AuditDAO:
             authMechanism=ARC_MONGO_AUTHMECHANISM,
         )[database]
 
+    def run_aggregation_query(collection, query, **kwargs):
+        return collection.aggregate(query, **kwargs)
+
     def get_subscribers(self, auditRangeStart: datetime, auditRangeEnd: datetime):
         auditCollection = self.client[AUDIT_COLLECTION]
         auditQuery = [
@@ -89,4 +92,4 @@ class AuditDAO:
             },
         ]
 
-        return auditCollection.aggregate(auditQuery, cursor={})
+        return self.run_aggregation_query(auditCollection, auditQuery, cursor={})
