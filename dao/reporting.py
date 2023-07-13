@@ -27,7 +27,6 @@ class ReportDAO:
         except SQLAlchemyError as e:
             error = str(e.__dict__["orig"])
             logger.error(error)
-            return error
 
     def create_reporting_table(self) -> None:
         logger.info("Initiate reporting table")

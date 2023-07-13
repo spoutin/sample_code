@@ -3,6 +3,7 @@ from datetime import datetime
 
 from pymongo import DESCENDING
 from pymongo.collection import Collection
+from pymongo.errors import PyMongoError
 
 from sample_code.dao._base_mongo import BaseMongoDAO
 from sample_code.settings import COLLECTION, DATABASE, PASSWORD, USERNAME
@@ -33,18 +34,21 @@ class UsageDAO(BaseMongoDAO):
         limit_results: bool = False,
         limit_count: int = 10,
     ) -> list:
-        if project is not None:
-            db_query = collection.find(query, project)
-        else:
-            db_query = collection.find(query)
+        try:
+            if project is not None:
+                db_query = collection.find(query, project)
+            else:
+                db_query = collection.find(query)
 
-        if sort:
-            db_query.sort(sort_field, DESCENDING)
+            if sort:
+                db_query.sort(sort_field, DESCENDING)
 
-        if limit_results:
-            db_query.limit(limit_count)
+            if limit_results:
+                db_query.limit(limit_count)
 
-        return [doc for doc in db_query]
+            return [doc for doc in db_query]
+        except PyMongoError as exc:
+            logger.error(str(exc))
 
     def get_subscriber_usage(
         self, subscriberId: str, effectiveDate: datetime, expiryDate: datetime

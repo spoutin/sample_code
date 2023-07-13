@@ -1,6 +1,9 @@
 import logging
 from datetime import datetime
 
+from pymongo.collection import Collection
+from pymongo.errors import PyMongoError
+
 from sample_code.dao._base_mongo import BaseMongoDAO
 from sample_code.settings import (
     AUDIT_COLLECTION,
@@ -26,8 +29,11 @@ class AuditDAO(BaseMongoDAO):
             mongoReplicaset=mongoReplicaset,
         )
 
-    def run_aggregation_query(collection, query, **kwargs):
-        return collection.aggregate(query, **kwargs)
+    def run_aggregation_query(collection: Collection, query: str, **kwargs):
+        try:
+            return collection.aggregate(query, **kwargs)
+        except PyMongoError as exc:
+            logger.error(str(exc))
 
     def get_subscribers(self, auditRangeStart: datetime, auditRangeEnd: datetime):
         logger.info(
