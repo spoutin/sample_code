@@ -83,19 +83,17 @@ class Main:
         self.run_compare_on_node("B", subListB)
         self.run_compare_on_node("C", subListC)
 
-    def run_compare_on_node(self, node: str, subList):
+    def run_compare_on_node(self, node: str, subList: list):
+        to_date = lambda d: datetime.strptime(d, "%Y-%m-%dT%H:%M:%SZ").astimezone(
+            pytz.timezone("US/Eastern")
+        )
+
         if len(subList) > 0:
             auditDate = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-            usageClient = None
+            usageClient = getattr(self, f"usageClient_{node}", None)
 
-            if node == "A":
-                usageClient = self.usageClient_A
-
-            elif node == "B":
-                usageClient = self.usageClient_B
-
-            elif node == "C":
-                usageClient = self.usageClient_C
+            if not usageClient:
+                raise Exception("Wrong node!")
 
             usageResult = pd.DataFrame(
                 columns=[
@@ -110,12 +108,8 @@ class Main:
             )
 
             for subscriber in subList:
-                effectiveDate = datetime.strptime(
-                    subscriber["effectiveDate"], "%Y-%m-%dT%H:%M:%SZ"
-                ).astimezone(pytz.timezone("US/Eastern"))
-                expiryDate = datetime.strptime(
-                    subscriber["expiryDate"], "%Y-%m-%dT%H:%M:%SZ"
-                ).astimezone(pytz.timezone("US/Eastern"))
+                effectiveDate = to_date(subscriber["effectiveDate"])
+                expiryDate = to_date(subscriber["expiryDate"])
 
                 res = usageClient.get_subscriber_usage(
                     subscriber["subscriberId"], effectiveDate, expiryDate
@@ -123,19 +117,19 @@ class Main:
                 usageResult = pd.concat([usageResult, pd.DataFrame(res)], axis=0)
 
             if len(usageResult) > 0:
-                data = []
-                for _, row in usageResult.iterrows():
-                    data.append(
-                        [
-                            row["extSubId"],
-                            row["MDN"],
-                            row["BAN"],
-                            row["start"],
-                            row["end"],
-                            int(row["bytesIn"]) + int(row["bytesOut"]),
-                            auditDate,
-                        ]
-                    )
+                data = [
+                    [
+                        row["extSubId"],
+                        row["MDN"],
+                        row["BAN"],
+                        row["start"],
+                        row["end"],
+                        int(row["bytesIn"]) + int(row["bytesOut"]),
+                        auditDate,
+                    ]
+                    for _, row in usageResult.iterrows()
+                ]
+
                 self.reportingClient.insert_reporting_data(data)
                 print(
                     f"{usageResult.size} rows written to {REPORTING_AULDATALEAK_TABLENAME}"

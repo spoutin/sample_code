@@ -18,7 +18,7 @@ class AuditDAO:
         username: str,
         password: str,
         database: str,
-    ):
+    ) -> None:
         mongo_uri = f"mongodb://{username}:{password}@{mongoServers}"
         self.client = MongoClient(
             mongo_uri,

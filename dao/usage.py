@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pymongo import DESCENDING, MongoClient
 from pymongo.collection import Collection
 
@@ -17,7 +19,7 @@ class UsageDAO:
         username: str,
         password: str,
         database: str,
-    ):
+    ) -> None:
         mongo_uri = f"mongodb://{username}:{password}@{mongoServers}"
         self.client = MongoClient(
             mongo_uri,
@@ -35,7 +37,7 @@ class UsageDAO:
         sort_field: str = "eventTime",
         limit_results: bool = False,
         limit_count: int = 10,
-    ):
+    ) -> list:
         if project is not None:
             db_query = collection.find(query, project)
         else:
@@ -47,15 +49,11 @@ class UsageDAO:
         if limit_results:
             db_query.limit(limit_count)
 
-        results = []
-        for doc in db_query:
-            results.append(doc)
-        # results_df = pd.DataFrame(list(results))
-        # return results_df
+        return [doc for doc in db_query]
 
-        return results
-
-    def get_subscriber_usage(self, subscriberId, effectiveDate, expiryDate) -> list:
+    def get_subscriber_usage(
+        self, subscriberId: str, effectiveDate: datetime, expiryDate: datetime
+    ) -> list:
         collection = self.client[COLLECTION]
         usageQuery = {
             "$and": [
