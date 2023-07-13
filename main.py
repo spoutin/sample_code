@@ -3,14 +3,16 @@ from datetime import date, datetime, time, timedelta
 import pandas as pd
 import pytz
 
-from dao.audit import AuditDAO
-from dao.reporting import ReportDAO
-from dao.usage import UsageDAO
+from sample_code.dao.audit import AuditDAO
+from sample_code.dao.reporting import ReportDAO
+from sample_code.dao.usage import UsageDAO
 from sample_code.settings import (
+    AUDIT_DATABASE,
     AUDIT_PASSWORD,
     AUDIT_REPLICASET,
     AUDIT_SERVER,
     AUDIT_USERNAME,
+    DATABASE,
     PASSWORD,
     REPLICASET_A,
     REPLICASET_B,
@@ -32,6 +34,7 @@ class Main:
             mongoReplicaset=AUDIT_REPLICASET,
             username=AUDIT_USERNAME,
             password=AUDIT_PASSWORD,
+            database=AUDIT_DATABASE,
         )
 
         self.usageClient_A = UsageDAO(
@@ -39,6 +42,7 @@ class Main:
             mongoReplicaset=REPLICASET_A,
             username=USERNAME,
             password=PASSWORD,
+            database=DATABASE,
         )
 
         self.usageClient_B = UsageDAO(
@@ -46,6 +50,7 @@ class Main:
             mongoReplicaset=REPLICASET_B,
             username=USERNAME,
             password=PASSWORD,
+            database=DATABASE,
         )
 
         self.usageClient_C = UsageDAO(
@@ -53,6 +58,7 @@ class Main:
             mongoReplicaset=REPLICASET_C,
             username=USERNAME,
             password=PASSWORD,
+            database=DATABASE,
         )
 
     def get_auldata_subscribers(self, auditRangeStart, auditRangeEnd):
@@ -132,9 +138,7 @@ class Main:
                     )
                 self.reportingClient.insert_reporting_data(data)
                 print(
-                    usageResult.size
-                    + " rows written to "
-                    + REPORTING_AULDATALEAK_TABLENAME
+                    f"{usageResult.size} rows written to {REPORTING_AULDATALEAK_TABLENAME}"
                 )
 
 
