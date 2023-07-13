@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pytz = "==2023.3"
+pytest = "==7.4.0"
+sqlalchemy = "==2.0.18"
+pre-commit = "==3.2.2"
+freezegun = "==1.2.2"
+pandas = "==2.0.3"
+pymongo = "==4.4.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
