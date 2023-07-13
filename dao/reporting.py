@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -9,6 +11,8 @@ from sample_code.settings import (
     REPORTING_SQL_SERVER,
     REPORTING_SQL_USERNAME,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ReportDAO:
@@ -22,9 +26,11 @@ class ReportDAO:
             return 0
         except SQLAlchemyError as e:
             error = str(e.__dict__["orig"])
+            logger.error(error)
             return error
 
     def create_reporting_table(self) -> None:
+        logger.info("Initiate reporting table")
         reportingTableCreateQuery = f"CREATE TABLE IF NOT EXISTS {REPORTING_AULDATALEAK_TABLENAME} ( \
                                     `SUBSCRIBERID` VARCHAR(100), \
                                     `MDN` VARCHAR(100), \
@@ -46,10 +52,12 @@ class ReportDAO:
         return ", ".join([f"({', '.join(map(str, r))})" for r in rows])
 
     def insert_reporting_data(self, rows: list) -> None:
+        logger.info("Insert new data in reporting table")
         usageReportingQuery = f"INSERT INTO {REPORTING_AULDATALEAK_TABLENAME} (SUBSCRIBERID, MDN, BAN, USAGESTART, USAGEEND, TOTALMB, AUDITDATE) VALUES "
         data = self.process_data_for_insert(rows)
         self.run_query(usageReportingQuery + data)
 
     def clean_reporting_data(self) -> None:
+        logger.info("Clean reporting table")
         reportingTableDeleteQuery = f"DELETE FROM {REPORTING_AULDATALEAK_TABLENAME} WHERE AUDITDATE < DATE_SUB(NOW(), INTERVAL 1 MONTH)"
         self.run_query(reportingTableDeleteQuery)

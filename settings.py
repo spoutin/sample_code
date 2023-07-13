@@ -1,4 +1,10 @@
+import logging
 import os
+
+# Configure the root logger
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 REPORTING_SQL_SERVER = "127.0.0.1"
 REPORTING_SQL_PORT = "3306"

@@ -1,3 +1,4 @@
+import logging
 from datetime import date, datetime, time, timedelta
 
 import pandas as pd
@@ -12,15 +13,17 @@ from sample_code.settings import (
     REPLICASET_A,
     REPLICASET_B,
     REPLICASET_C,
-    REPORTING_AULDATALEAK_TABLENAME,
     SERVER_A,
     SERVER_B,
     SERVER_C,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class Main:
     def __init__(self) -> None:
+        logger.info("Initiate clients with databases")
         self.reportingClient = ReportDAO()
 
         self.auditClient = AuditDAO(
@@ -43,11 +46,17 @@ class Main:
             mongoReplicaset=REPLICASET_C,
         )
 
-    def get_auldata_subscribers(self, auditRangeStart, auditRangeEnd):
+    def get_auldata_subscribers(
+        self, auditRangeStart: datetime, auditRangeEnd: datetime
+    ):
+        logger.info(
+            f"Get subscribers for the range between {auditRangeStart.isoformat()} and {auditRangeEnd.isoformat()}"
+        )
         res = self.auditClient.get_subscribers(auditRangeStart, auditRangeEnd)
         return pd.DataFrame(list(res))
 
     def compare(self, auldataSubs):
+        logger.info(f"Start comparing subscribers's data")
         subListA = []
         subListB = []
         subListC = []
@@ -66,6 +75,7 @@ class Main:
         self.run_compare_on_node("C", subListC)
 
     def run_compare_on_node(self, node: str, subList: list):
+        logger.info(f"Start comparing subscribers's data on the node {node}")
         to_date = lambda d: datetime.strptime(d, "%Y-%m-%dT%H:%M:%SZ").astimezone(
             pytz.timezone("US/Eastern")
         )
@@ -113,12 +123,11 @@ class Main:
                 ]
 
                 self.reportingClient.insert_reporting_data(data)
-                print(
-                    f"{usageResult.size} rows written to {REPORTING_AULDATALEAK_TABLENAME}"
-                )
 
 
 if __name__ == "__main__":
+    logger.info("Start the main script")
+
     mainClient = Main()
     mainClient.reportingClient.create_reporting_table()
 
@@ -130,3 +139,4 @@ if __name__ == "__main__":
     mainClient.compare(auldataSubs)
 
     mainClient.reportingClient.clean_reporting_data()
+    logger.info("Finish the main script")

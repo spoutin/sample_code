@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from sample_code.dao._base_mongo import BaseMongoDAO
@@ -7,6 +8,8 @@ from sample_code.settings import (
     AUDIT_PASSWORD,
     AUDIT_USERNAME,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class AuditDAO(BaseMongoDAO):
@@ -27,6 +30,9 @@ class AuditDAO(BaseMongoDAO):
         return collection.aggregate(query, **kwargs)
 
     def get_subscribers(self, auditRangeStart: datetime, auditRangeEnd: datetime):
+        logger.info(
+            f"Get subscriber usage between {auditRangeStart.isoformat()} and {auditRangeEnd.isoformat()}"
+        )
         auditCollection = self.client[AUDIT_COLLECTION]
         auditQuery = [
             {

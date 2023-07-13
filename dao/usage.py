@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from pymongo import DESCENDING
@@ -5,6 +6,8 @@ from pymongo.collection import Collection
 
 from sample_code.dao._base_mongo import BaseMongoDAO
 from sample_code.settings import COLLECTION, DATABASE, PASSWORD, USERNAME
+
+logger = logging.getLogger(__name__)
 
 
 class UsageDAO(BaseMongoDAO):
@@ -46,6 +49,9 @@ class UsageDAO(BaseMongoDAO):
     def get_subscriber_usage(
         self, subscriberId: str, effectiveDate: datetime, expiryDate: datetime
     ) -> list:
+        logger.info(
+            f"Get subscriber usage between {effectiveDate.isoformat()} and {expiryDate.isoformat()}"
+        )
         collection = self.client[COLLECTION]
         usageQuery = {
             "$and": [
