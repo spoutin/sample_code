@@ -6,9 +6,7 @@ from sample_code.dao.usage import UsageDAO
 def test_get_subscriber_usage(mock_usage_mongo_run_query):
     effDate = date.today() - timedelta(days=1)
     expDate = date.today()
-    usageClient = UsageDAO(
-        "mongo-server.com", "mongo-replicaset", "username", "secret_password", "db-name"
-    )
+    usageClient = UsageDAO("mongo-server.com", "mongo-replicaset")
 
     usageClient.get_subscriber_usage("1", effDate, expDate)
     assert mock_usage_mongo_run_query.called_once()

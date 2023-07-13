@@ -1,32 +1,27 @@
 from datetime import datetime
 
-from pymongo import MongoClient
-
+from sample_code.dao._base_mongo import BaseMongoDAO
 from sample_code.settings import (
-    ARC_MONGO_AUTHMECHANISM,
-    ARC_MONGO_AUTHSOURCE,
-    ARC_MONGO_READ_PREFERENCE,
     AUDIT_COLLECTION,
+    AUDIT_DATABASE,
+    AUDIT_PASSWORD,
+    AUDIT_USERNAME,
 )
 
 
-class AuditDAO:
+class AuditDAO(BaseMongoDAO):
     def __init__(
         self,
         mongoServers: str,
         mongoReplicaset: str,
-        username: str,
-        password: str,
-        database: str,
     ) -> None:
-        mongo_uri = f"mongodb://{username}:{password}@{mongoServers}"
-        self.client = MongoClient(
-            mongo_uri,
-            replicaSet=mongoReplicaset,
-            authSource=ARC_MONGO_AUTHSOURCE,
-            readPreference=ARC_MONGO_READ_PREFERENCE,
-            authMechanism=ARC_MONGO_AUTHMECHANISM,
-        )[database]
+        super().__init__(
+            username=AUDIT_USERNAME,
+            password=AUDIT_PASSWORD,
+            database=AUDIT_DATABASE,
+            mongoServers=mongoServers,
+            mongoReplicaset=mongoReplicaset,
+        )
 
     def run_aggregation_query(collection, query, **kwargs):
         return collection.aggregate(query, **kwargs)

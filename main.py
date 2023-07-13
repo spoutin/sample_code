@@ -7,13 +7,8 @@ from sample_code.dao.audit import AuditDAO
 from sample_code.dao.reporting import ReportDAO
 from sample_code.dao.usage import UsageDAO
 from sample_code.settings import (
-    AUDIT_DATABASE,
-    AUDIT_PASSWORD,
     AUDIT_REPLICASET,
     AUDIT_SERVER,
-    AUDIT_USERNAME,
-    DATABASE,
-    PASSWORD,
     REPLICASET_A,
     REPLICASET_B,
     REPLICASET_C,
@@ -21,7 +16,6 @@ from sample_code.settings import (
     SERVER_A,
     SERVER_B,
     SERVER_C,
-    USERNAME,
 )
 
 
@@ -32,33 +26,21 @@ class Main:
         self.auditClient = AuditDAO(
             mongoServers=AUDIT_SERVER,
             mongoReplicaset=AUDIT_REPLICASET,
-            username=AUDIT_USERNAME,
-            password=AUDIT_PASSWORD,
-            database=AUDIT_DATABASE,
         )
 
         self.usageClient_A = UsageDAO(
             mongoServers=SERVER_A,
             mongoReplicaset=REPLICASET_A,
-            username=USERNAME,
-            password=PASSWORD,
-            database=DATABASE,
         )
 
         self.usageClient_B = UsageDAO(
             mongoServers=SERVER_B,
             mongoReplicaset=REPLICASET_B,
-            username=USERNAME,
-            password=PASSWORD,
-            database=DATABASE,
         )
 
         self.usageClient_C = UsageDAO(
             mongoServers=SERVER_C,
             mongoReplicaset=REPLICASET_C,
-            username=USERNAME,
-            password=PASSWORD,
-            database=DATABASE,
         )
 
     def get_auldata_subscribers(self, auditRangeStart, auditRangeEnd):

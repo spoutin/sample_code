@@ -4,8 +4,8 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def mock_audit_mongo_client():
-    mock_mongo_client = patch("sample_code.dao.audit.MongoClient")
+def mock_mongo_client():
+    mock_mongo_client = patch("sample_code.dao._base_mongo.MongoClient")
     yield mock_mongo_client.start()
     mock_mongo_client.stop()
 
@@ -15,13 +15,6 @@ def mock_usage_mongo_run_agg_query():
     mock_run_query = patch("sample_code.dao.audit.AuditDAO.run_aggregation_query")
     yield mock_run_query.start()
     mock_run_query.stop()
-
-
-@pytest.fixture(autouse=True)
-def mock_usage_mongo_client():
-    mock_mongo_client = patch("sample_code.dao.usage.MongoClient")
-    yield mock_mongo_client.start()
-    mock_mongo_client.stop()
 
 
 @pytest.fixture(autouse=True)

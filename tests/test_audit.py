@@ -6,9 +6,7 @@ from sample_code.dao.audit import AuditDAO
 def test_get_subscribers(mock_usage_mongo_run_agg_query):
     startDate = date.today() - timedelta(days=1)
     endDate = date.today()
-    auditClient = AuditDAO(
-        "mongo-server.com", "mongo-replicaset", "username", "secret_password", "db-name"
-    )
+    auditClient = AuditDAO("mongo-server.com", "mongo-replicaset")
 
     auditClient.get_subscribers(startDate, endDate)
     assert mock_usage_mongo_run_agg_query.called_once()
