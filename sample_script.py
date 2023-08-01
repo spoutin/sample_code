@@ -1,5 +1,5 @@
+#!/usr/bin/env python
 import os
-
 import pytz
 import pandas as pd
 from datetime import datetime, timedelta, date, time
@@ -25,10 +25,16 @@ AUDIT_COLLECTION = "myauditcollection"
 SERVER_A = "127.0.0.1:27017"
 SERVER_B = "127.0.0.1:27017"
 SERVER_C = "127.0.0.1:27017"
+
 REPLICASET_A = "rs0"
 REPLICASET_B = "rs1"
 REPLICASET_C = "rs2"
-USERNAME = os.environ.get('mongo_USERNAME')PASSWORD = os.environ.get('mongo_PASSWORD')DATABASE = "mydb"COLLECTION = "mycollection"
+
+MONGODB_USERNAME = os.environ.get('mongo_USERNAME')
+MONGODB_PASSWORD = os.environ.get('mongo_PASSWORD')
+MONGODB_DATABASE = "mydb"
+MONGODB_COLLECTION = "mycollection"
+
 ARC_MONGO_PORT = '27017'
 ARC_MONGO_AUTHMECHANISM = "SCRAM-SHA-1"
 ARC_MONGO_AUTHSOURCE = "admin"
@@ -40,7 +46,9 @@ REPORTING_AULDATALEAK_TABLENAME = "auldata_leak"
 
 def get_mongo_client(mongoServers: str, mongoReplicaset: str, username: str, password: str):
     mongo_uri = 'mongodb://%s:%s@%s' % (username, password, mongoServers)
-    return MongoClient(mongo_uri, replicaSet=mongoReplicaset, authSource=ARC_MONGO_AUTHSOURCE,
+    return MongoClient(mongo_uri,
+                       replicaSet=mongoReplicaset,
+                       authSource=ARC_MONGO_AUTHSOURCE,
                        readPreference=ARC_MONGO_READ_PREFERENCE,
                        authMechanism=ARC_MONGO_AUTHMECHANISM)
 
@@ -55,18 +63,7 @@ def connect_to_mysql():
 def run_mongo_query(collection: Collection, query: dict, project: dict = None, sort: bool = True,
                     sort_field: str = 'eventTime',
                     limit_results: bool = False, limit_count: int = 10):
-    results = []
-    if project is not None:
-        db_query = collection.find(query, project)
-    else:
-        db_query = collection.find(query)
-    if sort:
-        db_query.sort(sort_field, DESCENDING)
-    if limit_results:
-        db_query.limit(limit_count)
-    for doc in db_query:
-        results.append(doc)
-
+    results = collection.find(query, project).sort(sort_field, DESCENDING).limit(limit_count)
     results_df = pd.DataFrame(list(results))
     return results_df
 
@@ -77,10 +74,9 @@ def run_mongo_query_agr(collection: Collection, query: dict):
     return results_df
 
 
-def create_mysql_table(sql_client, q, tbl_name):
+def create_mysql_table(sql_client, q):
     try:
         sql_client.execute(q)
-        return 0
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
         return error
@@ -102,8 +98,8 @@ def init_aludata_leak_reporting_table(client):
     reportingTableCreateIndex = f'CREATE INDEX idx_AUDITDATE \
                                     ON {REPORTING_AULDATALEAK_TABLENAME} (AUDITDATE);'
 
-    create_mysql_table(client, reportingTableCreateQuery, REPORTING_AULDATALEAK_TABLENAME)
-    create_mysql_table(client, reportingTableCreateIndex, REPORTING_AULDATALEAK_TABLENAME)
+    create_mysql_table(client, reportingTableCreateQuery)
+    create_mysql_table(client, reportingTableCreateIndex)
 
 
 def get_auldata_subscribers(auditRangeStart: datetime, auditRangeEnd: datetime):
@@ -111,12 +107,8 @@ def get_auldata_subscribers(auditRangeStart: datetime, auditRangeEnd: datetime):
         mongoServers=AUDIT_SERVER,
         mongoReplicaset=AUDIT_REPLICASET,
         username=AUDIT_USERNAME,
-        password=AUDIT_PASSWORD)[ARC_AUDIT_DATABASE]
+        password=AUDIT_PASSWORD)[ARC_MONGO_DATABASE]
     auditCollection = auditClient[AUDIT_COLLECTION]
-
-    # print(auditRangeStart.strftime('%Y-%m-%dT%H:%M:%SZ'))
-    # print(auditRangeEnd.strftime('%Y-%m-%dT%H:%M:%SZ'))
-
     auditQuery = [
             {
                 "$match": {
@@ -208,7 +200,9 @@ def run_compare_on_node(node: str, subList):
         usageClient = get_mongo_client(
             mongoServers=arcUsageServer,
             mongoReplicaset=arcUsageReplicaset,
-            username=USERNAME,            password=PASSWORD)[ARC_USAGE_DATABASE]        usageCollection = usageClient[COLLECTION]
+            username=MONGODB_USERNAME,
+            password=MONGODB_PASSWORD)[ARC_MONGO_DATABASE]
+        usageCollection = usageClient[MONGODB_COLLECTION]
         usageResult = pd.DataFrame(columns = ['extSubId', 'MDN', 'BAN', 'start', 'end', 'bytesIn', 'bytesOut'])
 
         for subscriber in subList:
@@ -232,6 +226,7 @@ def run_compare_on_node(node: str, subList):
             usageResultReportingQuery = usageResultReportingQuery[:-1]
             reportingClient.execute(usageResultReportingQuery)
             print(usageResult.size + " rows written to " + REPORTING_AULDATALEAK_TABLENAME)
+
 
 def compare(auldataSubs):
     subListA = []
