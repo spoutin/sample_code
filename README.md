@@ -17,6 +17,6 @@ create_report
 Another way, is to run directly from git using pipx. This is useful for usage in pipelines:
 
 ```
-pipx run git+https://<link to git repo> create_report
+pipx run --spec git+https://<link to git repo> create_report
 ```
 

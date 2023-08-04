@@ -1,7 +1,6 @@
 import logging
 import os
 
-from .create_report import create_report
 
 logger = logging.getLogger(__name__)
 
@@ -21,4 +20,6 @@ def setup_logging() -> None:
 def main() -> None:
     setup_logging()
     logger.info("Starting create_report")
+    from .create_report import create_report
+
     create_report()
