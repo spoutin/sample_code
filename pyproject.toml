@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "create_report"
+version = "0.1.0"
+description = ""
+authors = ["Kenneth Langga"]
+readme = "README.md"
+packages = [{ include = "create_report", from = "src" }]
+
+[tool.poetry.scripts]
+create_report = "create_report.cli:main"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.0.3"
+pymongo = "^4.4.1"
+sqlalchemy = "^2.0.19"
+python-dotenv = "^1.0.0"
+python-dateutil = "^2.8.2"
+pymysql = "^1.1.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+ruff = "^0.0.282"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.0"
+pytest-env = "^0.8.2"
+pytest-runner = "^6.0.0"
+
+[tool.ruff]
+select = ["ALL"]
+ignore = ["ERA001", "D", "S608"]
+fixable = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = [
+    "tests",
+]
+env = [
+    "ARC_MONGO_AUTH_MECHANISM=SCRAM-SHA-1",
+    "ARC_MONGO_AUTH_SOURCE=admin",
+    "ARC_MONGO_READ_PREFERENCE=secondary",
+    "REPORTING_SQL_SERVER=127.0.0.1",
+    "REPORTING_SQL_PORT=3306",
+    "REPORTING_SQL_DATABASE=testdb",
+    "REPORTING_SQL_USERNAME=testuser",
+    "REPORTING_SQL_PASSWORD=testpass",
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
